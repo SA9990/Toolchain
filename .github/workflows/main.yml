@@ -1,0 +1,33 @@
+name: 🤖 Clang_Downloader
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Provide_CLANG_URL"
+        required: true
+        type: string
+        default: "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main-kernel/clang-r563880c.tar.gz"
+
+env:
+  TZ: Asia/Kolkata
+  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
+jobs:
+  download_and_release_toolchain:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download AOSP Clang Toolchain
+        run: |
+          wget -q --show-progress -c "${{ inputs.url }}"
+
+      - name: Upload toolchain to GitHub Release
+        uses: softprops/action-gh-release@v2.4.1
+        with:
+          tag_name: "${{ inputs.url }}"
+          name: "Toolchain"
+          body: |
+            This release provides the prebuilt AOSP Clang
+            Toolchain : `${{ inputs.url }}`
+          files: "*.tar.gz"
