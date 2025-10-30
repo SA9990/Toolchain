@@ -37,7 +37,7 @@ jobs:
           echo "Using tag: ${TAG}-${DATE}"
 
       - name: 📦 Upload toolchain to GitHub Release
-        uses: softprops/action-gh-release@v2.4
+        uses: softprops/action-gh-release@v2.4.1
         with:
           tag_name: "${{ env.tag }}-${{ env.DATE }}"
           name: "Toolchain ${{ env.tag }} (${env.DATE})"
