@@ -40,7 +40,7 @@ jobs:
         uses: softprops/action-gh-release@v2.4.1
         with:
           tag_name: "${{ env.tag }}-${{ env.DATE }}"
-          name: "Toolchain ${{ env.tag }} (${env.DATE})"
+          name: "Toolchain"
           body: |
             ## 📦 AOSP Clang Toolchain Release
             - **Source:** `${{ inputs.url }}`
