@@ -4,30 +4,59 @@ on:
   workflow_dispatch:
     inputs:
       url:
-        description: "Provide_CLANG_URL"
+        description: "Provide AOSP Clang Toolchain URL"
         required: true
         type: string
         default: "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main-kernel/clang-r563880c.tar.gz"
 
 env:
   TZ: Asia/Kolkata
-  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+  # Use GH_PAT if you’re uploading to another repo; otherwise, GITHUB_TOKEN is fine
+  GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
 
 jobs:
   download_and_release_toolchain:
     runs-on: ubuntu-latest
+    name: 🧰 Download and Upload Clang Toolchain
 
     steps:
-      - name: Download AOSP Clang Toolchain
+      - name: 📅 Set build date
+        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+
+      - name: 🌐 Download AOSP Clang Toolchain
         run: |
+          echo "Downloading from: ${{ inputs.url }}"
           wget -q --show-progress -c "${{ inputs.url }}"
 
-      - name: Upload toolchain to GitHub Release
-        uses: softprops/action-gh-release@v2.4.1
+      - name: 🔍 Extract filename and tag
+        run: |
+          FILE=$(basename "${{ inputs.url }}")
+          TAG="${FILE%.tar.gz}"
+          echo "file=$FILE" >> $GITHUB_ENV
+          echo "tag=$TAG" >> $GITHUB_ENV
+          echo "Using tag: ${TAG}-${DATE}"
+
+      - name: 📦 Upload toolchain to GitHub Release
+        uses: softprops/action-gh-release@v2.4
         with:
-          tag_name: "${{ inputs.url }}"
-          name: "Toolchain"
+          tag_name: "${{ env.tag }}-${{ env.DATE }}"
+          name: "Toolchain ${{ env.tag }} (${env.DATE})"
           body: |
-            This release provides the prebuilt AOSP Clang
-            Toolchain : `${{ inputs.url }}`
-          files: "*.tar.gz"
+            ## 📦 AOSP Clang Toolchain Release
+            - **Source:** `${{ inputs.url }}`
+            - **Build Date:** `${{ env.DATE }}`
+            - **Filename:** `${{ env.file }}`
+
+            ---
+            This release contains the prebuilt AOSP Clang toolchain for kernel builds.
+          files: "${{ env.file }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT || secrets.GITHUB_TOKEN }}
+
+      - name: ✅ Summary
+        run: |
+          echo "Release created successfully!"
+          echo "Tag: ${{ env.tag }}-${{ env.DATE }}"
+          echo "File: ${{ env.file }}"
