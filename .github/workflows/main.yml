@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: 📅 Set build date
-        run: echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        run: echo "DATE=$(date +'%d-%m-%Y')" >> $GITHUB_ENV
 
       - name: 🌐 Download AOSP Clang Toolchain
         run: |
@@ -39,7 +39,7 @@ jobs:
       - name: 📦 Upload toolchain to GitHub Release
         uses: softprops/action-gh-release@v2.4.2
         with:
-          tag_name: "${{ env.tag }}-${{ env.DATE }}"
+          tag_name: "${{ env.tag }}"
           name: "Toolchain"
           body: |
             ## 📦 AOSP Clang Toolchain Release
