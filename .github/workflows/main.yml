@@ -7,7 +7,7 @@ on:
         description: "Provide AOSP Clang Toolchain URL"
         required: true
         type: string
-        default: "https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main-kernel/clang-r563880c.tar.gz"
+        default: ""
 
 env:
   TZ: Asia/Kolkata
@@ -37,7 +37,7 @@ jobs:
           echo "Using tag: ${TAG}-${DATE}"
 
       - name: 📦 Upload toolchain to GitHub Release
-        uses: softprops/action-gh-release@v2.4.1
+        uses: softprops/action-gh-release@v2.4.2
         with:
           tag_name: "${{ env.tag }}-${{ env.DATE }}"
           name: "Toolchain"
